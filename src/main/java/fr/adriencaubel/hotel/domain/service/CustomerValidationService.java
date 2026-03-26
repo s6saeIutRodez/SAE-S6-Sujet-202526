@@ -1,4 +1,4 @@
-package fr.adriencaubel.hotel.service;
+package fr.adriencaubel.hotel.domain.service;
 
 public class CustomerValidationService {
     public static CustomerDto splitCustomer(String input) {

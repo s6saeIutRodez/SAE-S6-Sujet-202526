@@ -1,4 +1,4 @@
-package fr.adriencaubel.hotel.infra;
+package fr.adriencaubel.hotel.domain.port;
 
 import fr.adriencaubel.hotel.domain.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;

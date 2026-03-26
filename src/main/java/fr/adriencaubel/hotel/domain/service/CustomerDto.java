@@ -1,4 +1,4 @@
-package fr.adriencaubel.hotel.service;
+package fr.adriencaubel.hotel.domain.service;
 
 import lombok.Getter;
 import lombok.Setter;

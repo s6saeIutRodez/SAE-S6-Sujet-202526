@@ -1,11 +1,10 @@
-package fr.adriencaubel.hotel.api;
+package fr.adriencaubel.hotel.domain.api;
 
-import fr.adriencaubel.hotel.api.dto.AvailabilityResponse;
-import fr.adriencaubel.hotel.service.HotelService;
+import fr.adriencaubel.hotel.domain.api.dto.AvailabilityResponse;
+import fr.adriencaubel.hotel.domain.service.HotelService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/availability")

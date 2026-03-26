@@ -1,4 +1,4 @@
-package fr.adriencaubel.hotel.api.dto;
+package fr.adriencaubel.hotel.domain.api.dto;
 
 import java.util.UUID;
 

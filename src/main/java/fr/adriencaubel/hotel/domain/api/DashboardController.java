@@ -1,13 +1,13 @@
-package fr.adriencaubel.hotel.api;
+package fr.adriencaubel.hotel.domain.api;
 
 
-import fr.adriencaubel.hotel.api.dto.DashboardResponse;
+import fr.adriencaubel.hotel.domain.api.dto.DashboardResponse;
 import fr.adriencaubel.hotel.domain.Booking;
 import fr.adriencaubel.hotel.domain.BookingOption;
 import fr.adriencaubel.hotel.domain.RoomType;
-import fr.adriencaubel.hotel.infra.BookingRepository;
-import fr.adriencaubel.hotel.infra.InventoryRepository;
-import fr.adriencaubel.hotel.infra.RoomTypeRepository;
+import fr.adriencaubel.hotel.domain.port.BookingRepository;
+import fr.adriencaubel.hotel.domain.port.InventoryRepository;
+import fr.adriencaubel.hotel.domain.port.RoomTypeRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

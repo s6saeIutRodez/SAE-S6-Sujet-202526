@@ -1,15 +1,15 @@
-package fr.adriencaubel.hotel.service;
+package fr.adriencaubel.hotel.domain.service;
 
 
-import fr.adriencaubel.hotel.api.dto.AvailabilityResponse;
-import fr.adriencaubel.hotel.api.dto.BookingRequest;
+import fr.adriencaubel.hotel.domain.api.dto.AvailabilityResponse;
+import fr.adriencaubel.hotel.domain.api.dto.BookingRequest;
 import fr.adriencaubel.hotel.domain.Booking;
 import fr.adriencaubel.hotel.domain.BookingOption;
 import fr.adriencaubel.hotel.domain.Inventory;
 import fr.adriencaubel.hotel.domain.RoomType;
-import fr.adriencaubel.hotel.infra.BookingRepository;
-import fr.adriencaubel.hotel.infra.InventoryRepository;
-import fr.adriencaubel.hotel.infra.RoomTypeRepository;
+import fr.adriencaubel.hotel.domain.port.BookingRepository;
+import fr.adriencaubel.hotel.domain.port.InventoryRepository;
+import fr.adriencaubel.hotel.domain.port.RoomTypeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
