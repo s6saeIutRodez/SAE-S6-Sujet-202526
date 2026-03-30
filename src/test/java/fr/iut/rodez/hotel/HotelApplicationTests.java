@@ -1,7 +1,6 @@
-package fr.adriencaubel.hotel;
+package fr.iut.rodez.hotel;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 class HotelApplicationTests {
 
