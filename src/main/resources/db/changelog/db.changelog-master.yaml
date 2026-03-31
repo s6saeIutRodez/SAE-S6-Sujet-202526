@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: migration/001-create-room-type.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: migration/002-create-room-type-prices.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: migration/003-create-booking.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: migration/004-create-booking-options.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: migration/005-create-inventory.yaml
+      relativeToChangelogFile: true

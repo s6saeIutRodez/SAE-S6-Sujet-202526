@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: ton-nom
+      changes:
+        - createTable:
+            tableName: booking_options
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(100)
+              - column:
+                  name: comment
+                  type: VARCHAR(500)
+              - column:
+                  name: booking_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_booking_options_booking
+                    references: booking(id)

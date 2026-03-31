@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003
+      author: ton-nom
+      changes:
+        - createTable:
+            tableName: booking
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: room_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_booking_room_type
+                    references: room_type(id)
+              - column:
+                  name: from_date
+                  type: DATE
+              - column:
+                  name: to_date
+                  type: DATE
+              - column:
+                  name: quantity
+                  type: INT
+              - column:
+                  name: amount
+                  type: DECIMAL(10,2)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: nom
+                  type: VARCHAR(255)
+              - column:
+                  name: prenom
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)

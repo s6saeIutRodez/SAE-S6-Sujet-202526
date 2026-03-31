@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: hotel
+
+  # Base de données
+  datasource:
+    url: jdbc:mysql://localhost:3406/hotel_db
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA - on laisse Liquibase gérer le schéma
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  # Mail (MailHog en local)
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+# OpenTelemetry
+management:
+  otlp:
+    metrics:
+      export:
+        url: http://localhost:4318/v1/metrics
+        step: 10s
+  metrics:
+    tags:
+      application: hotel
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+
+otel:
+  exporter:
+    otlp:
+      endpoint: http://localhost:4318
+  resource:
+    attributes:
+      service.name: hotel

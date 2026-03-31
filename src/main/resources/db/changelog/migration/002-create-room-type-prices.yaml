@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: ton-nom
+      changes:
+        - createTable:
+            tableName: room_type_prices
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: price_per_night
+                  type: DECIMAL(10,2)
+              - column:
+                  name: room_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_room_type_prices_room_type
+                    references: room_type(id)

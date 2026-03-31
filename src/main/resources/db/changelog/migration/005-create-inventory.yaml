@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005
+      author: ton-nom
+      changes:
+        - createTable:
+            tableName: inventory
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: room_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_inventory_room_type
+                    references: room_type(id)
+              - column:
+                  name: date
+                  type: DATE
+              - column:
+                  name: total_rooms
+                  type: INT
+              - column:
+                  name: reserved_rooms
+                  type: INT
