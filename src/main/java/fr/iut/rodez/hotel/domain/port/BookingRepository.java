@@ -1,7 +1,11 @@
 package fr.iut.rodez.hotel.domain.port;
 
-import fr.adriencaubel.hotel.domain.Booking;
-import org.springframework.data.jpa.repository.JpaRepository;
+import fr.iut.rodez.hotel.domain.model.Booking;
+import java.util.List;
+import java.util.Optional;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository {
+    Booking save(Booking booking);
+    Optional<Booking> findById(Long id);
+    List<Booking> findAll();
 }
