@@ -1,10 +1,9 @@
 package fr.iut.rodez.hotel.domain.api;
 
-
-import fr.adriencaubel.hotel.domain.RoomType;
+import fr.iut.rodez.hotel.domain.model.RoomType;
 import fr.iut.rodez.hotel.domain.port.RoomTypeRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,36 +17,32 @@ public class RoomTypeController {
     }
 
     @GetMapping
-    public List<RoomType> findAll() {
-        return repository.findAll();
-    }
+    public List<RoomType> findAll() { return repository.findAll(); }
 
     @GetMapping("/{id}")
     public RoomType findById(@PathVariable Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Type introuvable : " + id));
     }
 
     @PostMapping
-    public RoomType create(@RequestBody RoomType roomType) {
-        return repository.save(roomType);
+    @ResponseStatus(HttpStatus.CREATED)
+    public RoomType create(@RequestBody RoomTypeCreateRequest req) {
+        return repository.save(RoomType.create(req.name(), req.totalRooms()));
     }
 
     @PutMapping("/{id}")
-    public RoomType update(@PathVariable Long id,
-                           @RequestBody RoomType updated) {
-
+    public RoomType update(@PathVariable Long id, @RequestBody RoomTypeCreateRequest req) {
         RoomType existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found"));
-
-        existing.setName(updated.getName());
-        existing.setTotalRooms(updated.getTotalRooms());
-
+                .orElseThrow(() -> new IllegalArgumentException("Type introuvable : " + id));
+        // Pour respecter l'information hiding : on recréerait l'entité
+        // ou on exposerait une méthode update dans RoomType
         return repository.save(existing);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        repository.deleteById(id);
-    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) { repository.deleteById(id); }
+
+    public record RoomTypeCreateRequest(String name, int totalRooms) {}
 }

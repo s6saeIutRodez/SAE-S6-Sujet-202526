@@ -1,24 +1,40 @@
+// infrastructure/api/BookingController.java
 package fr.iut.rodez.hotel.domain.api;
 
-import fr.iut.rodez.hotel.domain.api.dto.BookingRequest;
-import fr.adriencaubel.hotel.domain.Booking;
-import fr.iut.rodez.hotel.domain.service.HotelService;
+import fr.iut.rodez.hotel.application.usecase.ReserveRoomUseCase;
+import fr.iut.rodez.hotel.application.usecase.CancelBookingUseCase;
+import fr.iut.rodez.hotel.domain.api.dto.BookingRequestDto;
+import fr.iut.rodez.hotel.domain.api.dto.BookingResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/bookings")
 public class BookingController {
-    
-    private final HotelService hotelService;
-    
-    public BookingController(HotelService hotelService) {
-        this.hotelService = hotelService;
+
+    private final ReserveRoomUseCase reserveRoomUseCase;
+    private final CancelBookingUseCase cancelBookingUseCase;
+
+    public BookingController(ReserveRoomUseCase reserveRoomUseCase,
+                             CancelBookingUseCase cancelBookingUseCase) {
+        this.reserveRoomUseCase = reserveRoomUseCase;
+        this.cancelBookingUseCase = cancelBookingUseCase;
     }
-    
+
     @PostMapping
-    public Booking reserve(@RequestBody @Valid BookingRequest req) {
-        return hotelService.reserveRoom(req);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookingResponseDto reserve(@RequestBody @Valid BookingRequestDto req) {
+        var command = new ReserveRoomUseCase.Command(
+                req.roomTypeId(), req.from(), req.to(), req.quantity(),
+                req.nom(), req.prenom(), req.email(), req.options()
+        );
+        return BookingResponseDto.from(reserveRoomUseCase.execute(command));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancel(@PathVariable Long id) {
+        cancelBookingUseCase.execute(id);
     }
 }
