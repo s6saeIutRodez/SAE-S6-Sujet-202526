@@ -35,7 +35,7 @@ public class GetDashboardUseCase {
 
         long totalBookings = bookings.size();
 
-        // On filtre les montants null avant de sommer
+        // On filtre les montants null avant de les additionner
         BigDecimal totalRevenue = bookings.stream()
                 .filter(b -> BookingStatus.CONFIRMED.name().equals(b.getStatus()))
                 .map(Booking::getAmount)
