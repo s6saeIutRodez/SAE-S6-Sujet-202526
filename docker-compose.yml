@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0
@@ -21,39 +23,17 @@ services:
     image: mailhog/mailhog:latest
     container_name: hotel-mailhog
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
     networks:
       - hotel-network
 
   grafana-lgtm:
-    image: grafana/otel-lgtm:latest
-    container_name: hotel-grafana
+    image: 'grafana/otel-lgtm:latest'
     ports:
       - '3000:3000'
       - '4317:4317'
       - '4318:4318'
-    networks:
-      - hotel-network
-
-  hotel-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: hotel-app
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hotel_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-      SPRING_MAIL_HOST: mailhog
-      SPRING_MAIL_PORT: 1025
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - hotel-network
 
 volumes:
   mysql_data:
