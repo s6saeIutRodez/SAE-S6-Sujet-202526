@@ -1,4 +1,4 @@
-package fr.iut.rodez.hotel.domain.api.dto;
+package fr.iut.rodez.hotel.infrastructure.api.dto;
 
 import fr.iut.rodez.hotel.application.usecase.CheckAvailabilityUseCase;
 import java.time.LocalDate;

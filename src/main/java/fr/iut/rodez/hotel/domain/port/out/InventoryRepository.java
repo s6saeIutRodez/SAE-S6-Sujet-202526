@@ -1,4 +1,4 @@
-package fr.iut.rodez.hotel.domain.port;
+package fr.iut.rodez.hotel.domain.port.out;
 
 import fr.iut.rodez.hotel.domain.model.Inventory;
 import java.time.LocalDate;

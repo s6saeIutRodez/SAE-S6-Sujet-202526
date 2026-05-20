@@ -5,22 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Entity
-@Table(name = "room_types")
 public class RoomType {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private int totalRooms;
 
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL,
-            orphanRemoval = true, fetch = FetchType.LAZY)
     private List<RoomTypePrice> prices = new ArrayList<>();
 
     protected RoomType() {}

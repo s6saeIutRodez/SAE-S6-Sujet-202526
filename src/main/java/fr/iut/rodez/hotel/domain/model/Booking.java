@@ -8,43 +8,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Entity
-@Table(name = "bookings")
 public class Booking {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_type_id", nullable = false)
     private RoomType roomType;
 
-    @Column(nullable = false)
     private LocalDate fromDate;
 
-    @Column(nullable = false)
     private LocalDate toDate;
 
-    @Column(nullable = false)
     private int quantity;
 
-    @Column(precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false)
     private String nom;
 
-    @Column(nullable = false)
     private String prenom;
 
-    @Column(nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingOption> options = new ArrayList<>();
 
     protected Booking() {}

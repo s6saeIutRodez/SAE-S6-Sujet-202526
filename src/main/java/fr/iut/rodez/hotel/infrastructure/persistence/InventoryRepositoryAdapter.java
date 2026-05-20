@@ -1,7 +1,7 @@
 package fr.iut.rodez.hotel.infrastructure.persistence;
 
 import fr.iut.rodez.hotel.domain.model.Inventory;
-import fr.iut.rodez.hotel.domain.port.InventoryRepository;
+import fr.iut.rodez.hotel.domain.port.out.InventoryRepository;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;

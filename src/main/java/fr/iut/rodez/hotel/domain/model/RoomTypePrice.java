@@ -4,25 +4,16 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "room_type_prices")
 public class RoomTypePrice {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private LocalDate startDate;
 
-    @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal pricePerNight;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_type_id")
     private RoomType roomType;
 
     protected RoomTypePrice() {}

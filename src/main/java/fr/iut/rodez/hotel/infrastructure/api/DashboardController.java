@@ -1,5 +1,5 @@
 // infrastructure/api/DashboardController.java
-package fr.iut.rodez.hotel.domain.api;
+package fr.iut.rodez.hotel.infrastructure.api;
 
 import fr.iut.rodez.hotel.application.usecase.GetDashboardUseCase;
 import org.springframework.web.bind.annotation.*;

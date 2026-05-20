@@ -1,4 +1,4 @@
-package fr.iut.rodez.hotel.domain.api.dto;
+package fr.iut.rodez.hotel.infrastructure.api.dto;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;

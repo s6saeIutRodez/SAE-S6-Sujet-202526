@@ -1,6 +1,6 @@
 package fr.iut.rodez.hotel.infrastructure.config;
 
-import fr.iut.rodez.hotel.domain.port.InventoryRepository;
+import fr.iut.rodez.hotel.domain.port.out.InventoryRepository;
 import fr.iut.rodez.hotel.domain.service.AvailabilityDomainService;
 import fr.iut.rodez.hotel.domain.service.PricingDomainService;
 import org.springframework.context.annotation.Bean;

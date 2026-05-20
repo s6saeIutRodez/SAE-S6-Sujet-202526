@@ -1,6 +1,6 @@
 package fr.iut.rodez.hotel.infrastructure.email;
 
-import fr.iut.rodez.hotel.domain.port.EmailPort;
+import fr.iut.rodez.hotel.domain.port.out.EmailPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;

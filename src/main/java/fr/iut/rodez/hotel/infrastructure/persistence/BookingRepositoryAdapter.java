@@ -2,7 +2,7 @@
 package fr.iut.rodez.hotel.infrastructure.persistence;
 
 import fr.iut.rodez.hotel.domain.model.Booking;
-import fr.iut.rodez.hotel.domain.port.BookingRepository;
+import fr.iut.rodez.hotel.domain.port.out.BookingRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;

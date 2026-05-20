@@ -2,7 +2,7 @@ package fr.iut.rodez.hotel.domain.service;
 
 import fr.iut.rodez.hotel.domain.model.Inventory;
 import fr.iut.rodez.hotel.domain.model.RoomType;
-import fr.iut.rodez.hotel.domain.port.InventoryRepository;
+import fr.iut.rodez.hotel.domain.port.out.InventoryRepository;
 import java.time.LocalDate;
 import java.util.List;
 

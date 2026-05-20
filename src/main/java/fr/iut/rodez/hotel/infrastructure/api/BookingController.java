@@ -1,10 +1,10 @@
 // infrastructure/api/BookingController.java
-package fr.iut.rodez.hotel.domain.api;
+package fr.iut.rodez.hotel.infrastructure.api;
 
 import fr.iut.rodez.hotel.application.usecase.ReserveRoomUseCase;
 import fr.iut.rodez.hotel.application.usecase.CancelBookingUseCase;
-import fr.iut.rodez.hotel.domain.api.dto.BookingRequestDto;
-import fr.iut.rodez.hotel.domain.api.dto.BookingResponseDto;
+import fr.iut.rodez.hotel.infrastructure.api.dto.BookingRequestDto;
+import fr.iut.rodez.hotel.infrastructure.api.dto.BookingResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

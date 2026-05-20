@@ -1,7 +1,7 @@
 package fr.iut.rodez.hotel.application.usecase;
 
 import fr.iut.rodez.hotel.domain.model.RoomType;
-import fr.iut.rodez.hotel.domain.port.RoomTypeRepository;
+import fr.iut.rodez.hotel.domain.port.out.RoomTypeRepository;
 import fr.iut.rodez.hotel.domain.service.AvailabilityDomainService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;

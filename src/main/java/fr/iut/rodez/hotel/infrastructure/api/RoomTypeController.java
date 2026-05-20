@@ -1,7 +1,8 @@
-package fr.iut.rodez.hotel.domain.api;
+package fr.iut.rodez.hotel.infrastructure.api;
 
 import fr.iut.rodez.hotel.domain.model.RoomType;
-import fr.iut.rodez.hotel.domain.port.RoomTypeRepository;
+import fr.iut.rodez.hotel.domain.port.out.RoomTypeRepository;
+import fr.iut.rodez.hotel.infrastructure.api.dto.RoomTypeResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -27,8 +28,9 @@ public class RoomTypeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomType create(@RequestBody RoomTypeCreateRequest req) {
-        return repository.save(RoomType.create(req.name(), req.totalRooms()));
+    public RoomTypeResponse create(@RequestBody RoomTypeCreateRequest req) {
+        var result = createRoomTypeUseCase.execute(req.name(), req.totalRooms());
+        return new RoomTypeResponse(result.id(), result.name(), result.totalRooms());
     }
 
     @PutMapping("/{id}")

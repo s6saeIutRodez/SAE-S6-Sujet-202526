@@ -4,26 +4,16 @@ package fr.iut.rodez.hotel.domain.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "inventories",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"room_type_id", "date"}))
 public class Inventory {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_type_id", nullable = false)
     private RoomType roomType;
 
-    @Column(nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false)
     private int totalRooms;
 
-    @Column(nullable = false)
     private int reservedRooms;
 
     protected Inventory() {}

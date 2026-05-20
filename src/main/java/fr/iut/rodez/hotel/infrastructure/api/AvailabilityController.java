@@ -1,8 +1,8 @@
 // infrastructure/api/AvailabilityController.java
-package fr.iut.rodez.hotel.domain.api;
+package fr.iut.rodez.hotel.infrastructure.api;
 
 import fr.iut.rodez.hotel.application.usecase.CheckAvailabilityUseCase;
-import fr.iut.rodez.hotel.domain.api.dto.AvailabilityResponseDto;
+import fr.iut.rodez.hotel.infrastructure.api.dto.AvailabilityResponseDto;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
