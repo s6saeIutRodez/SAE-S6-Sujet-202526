@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 
 /**
  * Entité JPA pour la table invoices.
+ * La table est créée automatiquement par Hibernate via spring.jpa.hibernate.ddl-auto=update|create.
  *
- * Immuabilité garantie à trois niveaux :
- *  1. Domaine  : Invoice n'a aucun setter
- *  2. JPA      : updatable=false sur toutes les colonnes métier → Hibernate ne génère jamais d'UPDATE
- *  3. SQL      : voir migration V2__add_invoices.sql
+ * Immuabilité garantie à deux niveaux :
+ *  1. Domaine : Invoice n'a aucun setter
+ *  2. JPA     : updatable=false sur toutes les colonnes métier → Hibernate ne génère jamais d'UPDATE
  */
 @Entity
 @Table(name = "invoices")
