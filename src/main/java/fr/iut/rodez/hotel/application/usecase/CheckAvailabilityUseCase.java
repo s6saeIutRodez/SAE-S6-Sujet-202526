@@ -1,13 +1,18 @@
 package fr.iut.rodez.hotel.application.usecase;
 
 import fr.iut.rodez.hotel.domain.model.RoomType;
+import fr.iut.rodez.hotel.domain.port.in.ICheckAvailabilityUseCase;
 import fr.iut.rodez.hotel.domain.port.out.RoomTypeRepository;
 import fr.iut.rodez.hotel.domain.service.AvailabilityDomainService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
+/**
+ * US-03 — Consulter la disponibilité
+ * Retourne le nombre de chambres restantes et si la quantité demandée est satisfaisable.
+ */
 @Service
-public class CheckAvailabilityUseCase {
+public class CheckAvailabilityUseCase implements ICheckAvailabilityUseCase {
 
     private final RoomTypeRepository roomTypeRepository;
     private final AvailabilityDomainService availabilityService;
@@ -18,6 +23,7 @@ public class CheckAvailabilityUseCase {
         this.availabilityService = availabilityService;
     }
 
+    @Override
     public Result execute(Long roomTypeId, LocalDate from, LocalDate to, int qty) {
         int quantity = qty <= 0 ? 1 : qty;
 
