@@ -96,3 +96,6 @@ INSERT INTO booking_options (id, booking_id, type, comment) VALUES (2, 1, 'FLEUR
 INSERT INTO booking_options (id, booking_id, type, comment) VALUES (3, 2, 'LIT BEBE',     'Lit bébé pour un enfant de 18 mois');
 INSERT INTO booking_options (id, booking_id, type, comment) VALUES (4, 4, 'AUTRE',        'Demande de chambre côté jardin');
 INSERT INTO booking_options (id, booking_id, type, comment) VALUES (5, 5, 'ANNIVERSAIRE', 'Décoration chambre pour anniversaire de mariage');
+
+INSERT INTO invoices (invoice_number, booking_id, client_nom, client_prenom, client_email, room_type_name, from_date, to_date, quantity, amount, issued_at)
+ VALUES ('FACT-20250527-0001', 1, 'Martin', 'Alice', 'alice.martin@mail.com', 'Chambre Simple', CURDATE() + INTERVAL 2 DAY, CURDATE() + INTERVAL 5 DAY, 1, 207.00, NOW());
