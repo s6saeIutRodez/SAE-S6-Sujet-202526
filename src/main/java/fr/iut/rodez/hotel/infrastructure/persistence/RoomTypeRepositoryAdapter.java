@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptateur : traduit entre RoomType (domaine) et RoomTypeJpaEntity (infra).
+ */
 @Repository
 public class RoomTypeRepositoryAdapter implements RoomTypeRepository {
 
@@ -15,8 +18,25 @@ public class RoomTypeRepositoryAdapter implements RoomTypeRepository {
         this.jpa = jpa;
     }
 
-    @Override public RoomType save(RoomType rt) { return jpa.save(rt); }
-    @Override public Optional<RoomType> findById(Long id) { return jpa.findById(id); }
-    @Override public List<RoomType> findAll() { return jpa.findAll(); }
-    @Override public void deleteById(Long id) { jpa.deleteById(id); }
+    @Override
+    public RoomType save(RoomType rt) {
+        return jpa.save(RoomTypeJpaEntity.fromDomain(rt)).toDomain();
+    }
+
+    @Override
+    public Optional<RoomType> findById(Long id) {
+        return jpa.findById(id).map(RoomTypeJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<RoomType> findAll() {
+        return jpa.findAll().stream()
+                .map(RoomTypeJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jpa.deleteById(id);
+    }
 }
