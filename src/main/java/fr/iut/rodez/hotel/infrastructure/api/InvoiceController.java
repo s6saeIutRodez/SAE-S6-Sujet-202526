@@ -2,6 +2,7 @@ package fr.iut.rodez.hotel.infrastructure.api;
 
 import fr.iut.rodez.hotel.application.usecase.GenerateInvoiceUseCase;
 import fr.iut.rodez.hotel.domain.port.out.InvoiceRepository;
+import fr.iut.rodez.hotel.infrastructure.api.dto.InvoiceRequestDto;
 import fr.iut.rodez.hotel.infrastructure.api.dto.InvoiceResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

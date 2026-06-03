@@ -4,14 +4,8 @@ import fr.iut.rodez.hotel.domain.model.RoomType;
 import fr.iut.rodez.hotel.domain.port.in.IGetRoomTypeUseCase;
 import fr.iut.rodez.hotel.domain.port.out.RoomTypeRepository;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
-/**
- * US-01 — Consulter la liste des types de chambres et leurs tarifs
- * Projette RoomType en Result (DTO interne) pour ne pas exposer les entités domaine.
- */
 @Service
 public class GetRoomTypeUseCase implements IGetRoomTypeUseCase {
 
@@ -37,13 +31,9 @@ public class GetRoomTypeUseCase implements IGetRoomTypeUseCase {
     }
 
     private Result toResult(RoomType rt) {
-        List<PriceResult> prices = rt.getPrices().stream()
+        var prices = rt.getPrices().stream()
                 .map(p -> new PriceResult(p.getStartDate(), p.getEndDate(), p.getPricePerNight()))
                 .toList();
         return new Result(rt.getId(), rt.getName(), rt.getTotalRooms(), prices);
     }
-
-    public record Result(Long id, String name, int totalRooms, List<PriceResult> prices) {}
-
-    public record PriceResult(LocalDate startDate, LocalDate endDate, BigDecimal pricePerNight) {}
 }

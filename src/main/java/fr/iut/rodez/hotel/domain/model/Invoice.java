@@ -4,11 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Agrégat facture — IMMUABLE après création.
- * Conformité anti-fraude TVA : aucun setter exposé,
- * updatable=false sur toutes les colonnes côté JPA.
- */
 public class Invoice {
 
     private Long id;
@@ -21,18 +16,24 @@ public class Invoice {
     private LocalDate fromDate;
     private LocalDate toDate;
     private int quantity;
-    private BigDecimal amount;        // figé au moment de l'émission
+    private BigDecimal amount;
+    private BigDecimal tvaRate; // Ajouté pour la conformité TVA
     private LocalDateTime issuedAt;
 
     protected Invoice() {}
 
-    /** Seul point d'entrée métier — vérifie les invariants. */
+    /** Seul point d'entrée métier — Vérification stricte des invariants */
     public static Invoice issue(Booking booking, String invoiceNumber) {
         if (booking == null)
             throw new IllegalArgumentException("La réservation est obligatoire");
-        if (!BookingStatus.CONFIRMED.name().equals(booking.getStatus()))
+
+        // Validation Cas d'erreur : Seul le statut CONFIRMED permet de facturer
+        if (!"CONFIRMED".equals(booking.getStatus())) {
             throw new IllegalStateException(
-                    "Impossible d'émettre une facture pour une réservation non confirmée");
+                    "Impossible d'émettre une facture pour une réservation avec le statut : " + booking.getStatus()
+            );
+        }
+
         if (invoiceNumber == null || invoiceNumber.isBlank())
             throw new IllegalArgumentException("Le numéro de facture est obligatoire");
 
@@ -46,16 +47,16 @@ public class Invoice {
         inv.fromDate      = booking.getFromDate();
         inv.toDate        = booking.getToDate();
         inv.quantity      = booking.getQuantity();
-        inv.amount        = booking.getAmount();   // copie défensive
+        inv.amount        = booking.getAmount();
+        inv.tvaRate       = new BigDecimal("10.00"); // Taux fixe de l'hôtel (ex: 10%)
         inv.issuedAt      = LocalDateTime.now();
         return inv;
     }
 
-    /** Reconstruction depuis la persistance uniquement — sans vérification des invariants métier. */
     public static Invoice reconstruct(Long id, String invoiceNumber, Long bookingId,
                                       String clientNom, String clientPrenom, String clientEmail,
                                       String roomTypeName, LocalDate fromDate, LocalDate toDate,
-                                      int quantity, BigDecimal amount, LocalDateTime issuedAt) {
+                                      int quantity, BigDecimal amount, BigDecimal tvaRate, LocalDateTime issuedAt) {
         Invoice inv = new Invoice();
         inv.id            = id;
         inv.invoiceNumber = invoiceNumber;
@@ -68,21 +69,23 @@ public class Invoice {
         inv.toDate        = toDate;
         inv.quantity      = quantity;
         inv.amount        = amount;
+        inv.tvaRate       = tvaRate;
         inv.issuedAt      = issuedAt;
         return inv;
     }
 
-    // Getters uniquement — pas de setters
-    public Long getId()               { return id; }
-    public String getInvoiceNumber()  { return invoiceNumber; }
-    public Long getBookingId()        { return bookingId; }
-    public String getClientNom()      { return clientNom; }
-    public String getClientPrenom()   { return clientPrenom; }
-    public String getClientEmail()    { return clientEmail; }
-    public String getRoomTypeName()   { return roomTypeName; }
-    public LocalDate getFromDate()    { return fromDate; }
-    public LocalDate getToDate()      { return toDate; }
-    public int getQuantity()          { return quantity; }
-    public BigDecimal getAmount()     { return amount; }
-    public LocalDateTime getIssuedAt(){ return issuedAt; }
+    // Getters uniquement (Pas de setters pour garantir l'inaltérabilité)
+    public Long getId()                { return id; }
+    public String getInvoiceNumber()   { return invoiceNumber; }
+    public Long getBookingId()         { return bookingId; }
+    public String getClientNom()       { return clientNom; }
+    public String getClientPrenom()    { return clientPrenom; }
+    public String getClientEmail()     { return clientEmail; }
+    public String getRoomTypeName()    { return roomTypeName; }
+    public LocalDate getFromDate()     { return fromDate; }
+    public LocalDate getToDate()       { return toDate; }
+    public int getQuantity()           { return quantity; }
+    public BigDecimal getAmount()      { return amount; }
+    public BigDecimal getTvaRate()     { return tvaRate; }
+    public LocalDateTime getIssuedAt() { return issuedAt; }
 }

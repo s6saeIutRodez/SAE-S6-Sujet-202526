@@ -11,21 +11,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * US-08 — Émettre une facture immuable
- *
- * Conformité réglementaire anti-fraude TVA :
- *  - L'invariant (réservation CONFIRMED) est vérifié dans Invoice.issue()
- *  - Le montant est figé à l'instant de l'émission (copie défensive)
- *  - updatable=false sur toutes les colonnes JPA empêche tout UPDATE ultérieur
- */
 @Service
 public class GenerateInvoiceUseCase implements IGenerateInvoiceUseCase {
 
     private final BookingRepository bookingRepository;
     private final InvoiceRepository invoiceRepository;
-
-    // En production : remplacer par une séquence DB dédiée pour garantir l'unicité
     private static final AtomicLong COUNTER = new AtomicLong(1);
 
     public GenerateInvoiceUseCase(BookingRepository bookingRepository,
@@ -37,10 +27,19 @@ public class GenerateInvoiceUseCase implements IGenerateInvoiceUseCase {
     @Override
     @Transactional
     public Invoice execute(Long bookingId) {
+        // 1. Validation Cas Limite : Empêcher les doublons de facture
+        if (!invoiceRepository.findByBookingId(bookingId).isEmpty()) {
+            throw new IllegalStateException(
+                    "Une facture a déjà été émise pour la réservation ID : " + bookingId
+            );
+        }
+
+        // 2. Récupération du Booking
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Réservation introuvable : " + bookingId));
 
+        // 3. Appel au Domaine avec tes 2 arguments
         Invoice invoice = Invoice.issue(booking, generateNumber());
         return invoiceRepository.save(invoice);
     }

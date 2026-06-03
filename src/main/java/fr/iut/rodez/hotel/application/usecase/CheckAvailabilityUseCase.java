@@ -7,10 +7,6 @@ import fr.iut.rodez.hotel.domain.service.AvailabilityDomainService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
-/**
- * US-03 — Consulter la disponibilité
- * Retourne le nombre de chambres restantes et si la quantité demandée est satisfaisable.
- */
 @Service
 public class CheckAvailabilityUseCase implements ICheckAvailabilityUseCase {
 
@@ -19,29 +15,18 @@ public class CheckAvailabilityUseCase implements ICheckAvailabilityUseCase {
 
     public CheckAvailabilityUseCase(RoomTypeRepository roomTypeRepository,
                                     AvailabilityDomainService availabilityService) {
-        this.roomTypeRepository = roomTypeRepository;
+        this.roomTypeRepository  = roomTypeRepository;
         this.availabilityService = availabilityService;
     }
 
     @Override
     public Result execute(Long roomTypeId, LocalDate from, LocalDate to, int qty) {
         int quantity = qty <= 0 ? 1 : qty;
-
         RoomType roomType = roomTypeRepository.findById(roomTypeId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Type de chambre introuvable : " + roomTypeId));
 
         int remaining = availabilityService.getMinAvailableRooms(roomType, from, to);
-        boolean available = remaining >= quantity;
-
-        return new Result(roomTypeId, from, to, available, remaining);
+        return new Result(roomTypeId, from, to, remaining >= quantity, remaining);
     }
-
-    public record Result(
-            Long roomTypeId,
-            LocalDate from,
-            LocalDate to,
-            boolean available,
-            int remainingRooms
-    ) {}
 }

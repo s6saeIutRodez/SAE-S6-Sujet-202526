@@ -7,5 +7,10 @@ import java.time.LocalDate;
  * US-06 — Calculer le prix d'un séjour
  */
 public interface ICalculatePriceUseCase {
-    BigDecimal execute(Long roomTypeId, LocalDate from, LocalDate to, int quantity);
+
+    Result execute(Command command);
+
+    record Command(Long roomTypeId, LocalDate from, LocalDate to, int quantity) {}
+
+    record Result(BigDecimal totalPrice, int nights, int quantity) {}
 }

@@ -5,13 +5,8 @@ import fr.iut.rodez.hotel.domain.port.in.ICalculatePriceUseCase;
 import fr.iut.rodez.hotel.domain.port.out.RoomTypeRepository;
 import fr.iut.rodez.hotel.domain.service.PricingDomainService;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
-/**
- * US-06 — Calculer le prix d'un séjour
- * Délègue le calcul au PricingDomainService (logique métier pure, sans infra).
- */
 @Service
 public class CalculatePriceUseCase implements ICalculatePriceUseCase {
 
@@ -20,16 +15,20 @@ public class CalculatePriceUseCase implements ICalculatePriceUseCase {
 
     public CalculatePriceUseCase(RoomTypeRepository roomTypeRepository,
                                  PricingDomainService pricingDomainService) {
-        this.roomTypeRepository = roomTypeRepository;
+        this.roomTypeRepository   = roomTypeRepository;
         this.pricingDomainService = pricingDomainService;
     }
 
     @Override
-    public BigDecimal execute(Long roomTypeId, LocalDate from, LocalDate to, int quantity) {
-        RoomType roomType = roomTypeRepository.findById(roomTypeId)
+    public Result execute(Command command) {
+        RoomType roomType = roomTypeRepository.findById(command.roomTypeId())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Type de chambre introuvable : " + roomTypeId));
+                        "Type de chambre introuvable : " + command.roomTypeId()));
 
-        return pricingDomainService.calculateTotalPrice(roomType, from, to, quantity);
+        var total  = pricingDomainService.calculateTotalPrice(
+                roomType, command.from(), command.to(), command.quantity());
+        int nights = (int) ChronoUnit.DAYS.between(command.from(), command.to());
+
+        return new Result(total, nights, command.quantity());
     }
 }

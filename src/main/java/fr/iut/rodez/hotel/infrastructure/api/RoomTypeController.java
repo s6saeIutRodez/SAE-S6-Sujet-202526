@@ -3,6 +3,7 @@ package fr.iut.rodez.hotel.infrastructure.api;
 import fr.iut.rodez.hotel.application.usecase.AddPriceToRoomTypeUseCase;
 import fr.iut.rodez.hotel.application.usecase.CreateRoomTypeUseCase;
 import fr.iut.rodez.hotel.application.usecase.GetRoomTypeUseCase;
+import fr.iut.rodez.hotel.domain.port.in.ICreateRoomTypeUseCase;
 import fr.iut.rodez.hotel.infrastructure.api.dto.RoomTypeDetailResponseDto;
 import fr.iut.rodez.hotel.infrastructure.api.dto.RoomTypePriceRequestDto;
 import fr.iut.rodez.hotel.infrastructure.api.dto.RoomTypeRequestDto;
@@ -50,8 +51,13 @@ public class RoomTypeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RoomTypeResponse create(@RequestBody @Valid RoomTypeRequestDto req) {
-        CreateRoomTypeUseCase.Result result =
-                createRoomTypeUseCase.execute(req.name(), req.totalRooms());
+        // 1. Instantiate the Command object expected by the use case
+        ICreateRoomTypeUseCase.Command command =
+                new ICreateRoomTypeUseCase.Command(req.name(), req.totalRooms());
+
+        // 2. Pass the command to the execute method
+        CreateRoomTypeUseCase.Result result = createRoomTypeUseCase.execute(command);
+
         return new RoomTypeResponse(result.id(), result.name(), result.totalRooms());
     }
 
