@@ -1,7 +1,7 @@
 package fr.iut.rodez.hotel.infrastructure.metrics;
 
 import fr.iut.rodez.hotel.domain.model.BookingStatus;
-import fr.iut.rodez.hotel.domain.port.out.BookingRepository;
+import fr.iut.rodez.hotel.domain.port.in.IGetDashboardUseCase;
 import fr.iut.rodez.hotel.domain.port.out.InventoryRepository;
 import fr.iut.rodez.hotel.domain.port.out.InvoiceRepository;
 import fr.iut.rodez.hotel.domain.port.out.RoomTypeRepository;
@@ -11,71 +11,46 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * Métriques Micrometer exposées via Prometheus (OTLP → OTel Collector → Prometheus).
- *
- * Conventions :
- *  - Micrometer  : dots    → hotel.bookings.all
- *  - Prometheus  : underscores → hotel_bookings_all
- *
- * ⚠️ Règle BigDecimal dans les lambdas Gauge :
- *   Si la lambda lève une exception (ou retourne NaN), Micrometer émet NaN.
- *   L'exportateur OTLP supprime les NaN → la métrique disparaît de Grafana.
- *   → TOUJOURS protéger les appels BigDecimal avec un bloc try/catch ou null-check.
- *   → Les adapters de repository retournent déjà BigDecimal.ZERO pour les cas null
- *     (voir BookingRepositoryAdapter, InvoiceRepositoryAdapter), mais on ajoute
- *     une garde supplémentaire ici par défense en profondeur.
- */
 @Component
 public class HotelMetrics {
 
-    public HotelMetrics(BookingRepository bookingRepository,
+    public HotelMetrics(IGetDashboardUseCase getDashboardUseCase,
                         RoomTypeRepository roomTypeRepository,
                         InventoryRepository inventoryRepository,
                         InvoiceRepository invoiceRepository,
                         MeterRegistry registry) {
 
-        // ── RÉSERVATIONS ──────────────────────────────────────────────────────
-        Gauge.builder("hotel.bookings.total", bookingRepository,
-                        repo -> repo.countByStatus(BookingStatus.CONFIRMED.name()))
-                .description("Réservations confirmées")
-                .tag("status", "CONFIRMED")
-                .register(registry);
-
-        Gauge.builder("hotel.bookings.total", bookingRepository,
-                        repo -> repo.countByStatus(BookingStatus.PENDING.name()))
-                .description("Réservations en attente")
-                .tag("status", "PENDING")
-                .register(registry);
-
-        Gauge.builder("hotel.bookings.total", bookingRepository,
-                        repo -> repo.countByStatus(BookingStatus.CANCELLED.name()))
-                .description("Réservations annulées")
-                .tag("status", "CANCELLED")
-                .register(registry);
-
-        Gauge.builder("hotel.bookings.all", bookingRepository,
-                        repo -> repo.countAll())
-                .description("Total toutes réservations confondues")
-                .register(registry);
-
-        // ── CHIFFRE D'AFFAIRES ────────────────────────────────────────────────
-        // null-check défensif : l'adaptateur retourne déjà BigDecimal.ZERO,
-        // mais on garde la garde ici au cas où un autre adaptateur serait branché.
-        Gauge.builder("hotel.revenue.total", bookingRepository,
-                        repo -> {
-                            BigDecimal rev = repo.sumRevenueByStatus(BookingStatus.CONFIRMED.name());
+        // ── CHIFFRE D'AFFAIRES VIA LE DASHBOARD USE CASE ──────────────────────
+        Gauge.builder("hotel.revenue.total", getDashboardUseCase,
+                        uc -> {
+                            BigDecimal rev = uc.execute().totalRevenue(); // ou getTotalRevenue()
                             return (rev != null ? rev : BigDecimal.ZERO).doubleValue();
                         })
                 .description("CA total des réservations confirmées (€ HT)")
                 .baseUnit("EUR")
                 .register(registry);
 
-        // ── OCCUPATION — AUJOURD'HUI ──────────────────────────────────────────
+        // ── RÉSERVATIONS VIA LE DASHBOARD USE CASE ────────────────────────────
+        Gauge.builder("hotel.bookings.all", getDashboardUseCase,
+                        uc -> (double) uc.execute().totalBookings()) // ou getTotalBookings()
+                .description("Total toutes réservations confondues")
+                .register(registry);
+
+        // Dynamisation des jauges par statut
+        for (BookingStatus status : BookingStatus.values()) {
+            Gauge.builder("hotel.bookings.total", getDashboardUseCase,
+                            uc -> {
+                                var statsByStatus = uc.execute().bookingsByStatus(); // ou getBookingsByStatus()
+                                return statsByStatus != null ? statsByStatus.getOrDefault(status.name(), 0L).doubleValue() : 0.0;
+                            })
+                    .description("Réservations enregistrées par statut")
+                    .tag("status", status.name())
+                    .register(registry);
+        }
+
+        // ── OCCUPATION ET CAPACITÉ ───────────────────────────────────────────
         Gauge.builder("hotel.capacity.total", roomTypeRepository,
-                        repo -> repo.findAll().stream()
-                                .mapToInt(rt -> rt.getTotalRooms())
-                                .sum())
+                        repo -> repo.findAll().stream().mapToInt(rt -> rt.getTotalRooms()).sum())
                 .description("Capacité totale de l'hôtel (toutes chambres)")
                 .register(registry);
 
@@ -89,25 +64,20 @@ public class HotelMetrics {
                 .description("Chambres disponibles aujourd'hui")
                 .register(registry);
 
-        Gauge.builder("hotel.occupancy.rate", inventoryRepository,
-                        repo -> {
-                            double total    = repo.sumTotalRoomsByDate(LocalDate.now());
-                            double reserved = repo.sumReservedRoomsByDate(LocalDate.now());
-                            return total == 0 ? 0.0 : (reserved * 100.0 / total);
-                        })
+        // Simplifié : on réutilise directement le taux calculé par votre Use Case
+        Gauge.builder("hotel.occupancy.rate", getDashboardUseCase,
+                        uc -> uc.execute().occupancyRate()) // ou getOccupancyRate()
                 .description("Taux d'occupation aujourd'hui (%)")
                 .baseUnit("percent")
                 .register(registry);
 
         // ── TYPES DE CHAMBRES ─────────────────────────────────────────────────
-        Gauge.builder("hotel.room_types.count", roomTypeRepository,
-                        repo -> repo.findAll().size())
+        Gauge.builder("hotel.room_types.count", roomTypeRepository, repo -> repo.findAll().size())
                 .description("Nombre de types de chambres configurés")
                 .register(registry);
 
         // ── FACTURES ──────────────────────────────────────────────────────────
-        Gauge.builder("hotel.invoices.total", invoiceRepository,
-                        repo -> repo.countAll())
+        Gauge.builder("hotel.invoices.total", invoiceRepository, InvoiceRepository::countAll)
                 .description("Nombre total de factures émises")
                 .register(registry);
 
@@ -120,12 +90,7 @@ public class HotelMetrics {
                 .baseUnit("EUR")
                 .register(registry);
 
-        // ── PRÉVISIONS D'OCCUPATION — 14 jours ───────────────────────────────
-        // hotel_inventory_reserved_forecast{days_ahead="00"} = chambres réservées aujourd'hui
-        // hotel_inventory_reserved_forecast{days_ahead="01"} = demain, ...
-        //
-        // Label zero-paddé → tri lexicographique correct dans Grafana (bar chart X-axis).
-        // Lambda appellée à chaque scrape : LocalDate.now().plusDays(offset) est toujours frais.
+        // ── PRÉVISIONS D'OCCUPATION (Si conservées dans Prometheus) ───────────
         for (int daysAhead = 0; daysAhead <= 13; daysAhead++) {
             final int offset = daysAhead;
             final String label = String.format("%02d", daysAhead);
