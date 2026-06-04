@@ -13,7 +13,7 @@ public class BookingOption {
 
     private String type; // ANNIVERSAIRE, FLEUR, LIT BEBE, AUTRE
 
-    private String comment; // texte libre
+    private String comment;
 
     @ManyToOne
     @JoinColumn(name = "booking_id")
