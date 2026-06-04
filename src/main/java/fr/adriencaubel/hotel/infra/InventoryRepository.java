@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
 
-    // Exclusif : [from, to)
     @Query("""
     SELECT i
     FROM Inventory i
