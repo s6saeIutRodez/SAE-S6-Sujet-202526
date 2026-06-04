@@ -45,14 +45,18 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
                 .toList();
     }
 
-    // ── IMPLÉMENTATION DES MÉTRIQUES OPTIMISÉES ──
     @Override
     public long countAll() {
         return jpa.count();
     }
 
+    /**
+     * SUM retourne null si la table est vide — on renvoie BigDecimal.ZERO pour éviter
+     * un NullPointerException dans le Gauge Micrometer (émettrait NaN → supprimé par OTLP).
+     */
     @Override
     public BigDecimal sumTotalAmountTTC() {
-        return jpa.sumTotalAmountTTC();
+        BigDecimal result = jpa.sumTotalAmountTTC();
+        return result != null ? result : BigDecimal.ZERO;
     }
 }
