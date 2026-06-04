@@ -32,12 +32,11 @@ public class AvailabilityDomainService {
         return getMinAvailableRooms(roomType, from, to) >= quantity;
     }
 
-    // Initialise l'inventaire pour les nuits manquantes puis réserve
     public void reserveInventory(RoomType roomType, LocalDate from, LocalDate to, int quantity) {
         LocalDate current = from;
         while (current.isBefore(to)) {
             Inventory inventory = getOrCreateInventory(roomType, current);
-            inventory.reserve(quantity); // invariant vérifié dans Inventory
+            inventory.reserve(quantity);
             inventoryRepository.save(inventory);
             current = current.plusDays(1);
         }
