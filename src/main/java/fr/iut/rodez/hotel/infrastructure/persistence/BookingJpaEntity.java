@@ -52,7 +52,7 @@ public class BookingJpaEntity {
     protected BookingJpaEntity() {}
 
     /**
-     * Conversion domaine → JPA.
+     * Conversion domaine JPA.
      * Reçoit la référence JPA du room type pour éviter un SELECT supplémentaire.
      */
     static BookingJpaEntity fromDomain(Booking booking, RoomTypeJpaEntity roomTypeRef) {
@@ -67,14 +67,13 @@ public class BookingJpaEntity {
         e.nom      = booking.getNom();
         e.prenom   = booking.getPrenom();
         e.email    = booking.getEmail();
-        // Les options sont construites après pour avoir la référence à l'entité parente
         e.options  = booking.getOptions().stream()
                 .map(o -> BookingOptionJpaEntity.fromDomain(o, e))
                 .toList();
         return e;
     }
 
-    /** Conversion JPA → domaine avec reconstruction complète des options (IDs préservés) */
+    /** Conversion JPA domaine avec reconstruction complète des options */
     Booking toDomain() {
         Booking b = Booking.reconstruct(
                 id, roomType.toDomain(),
