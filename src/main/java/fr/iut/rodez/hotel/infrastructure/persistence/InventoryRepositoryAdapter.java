@@ -1,0 +1,71 @@
+package fr.iut.rodez.hotel.infrastructure.persistence;
+
+import fr.iut.rodez.hotel.domain.model.Inventory;
+import fr.iut.rodez.hotel.domain.port.out.InventoryRepository;
+import org.springframework.stereotype.Repository;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Adaptateur : traduit entre Inventory (domaine) et InventoryJpaEntity (infra).
+ */
+@Repository
+public class InventoryRepositoryAdapter implements InventoryRepository {
+
+    private final JpaInventoryRepository inventoryJpa;
+    private final JpaRoomTypeRepository  roomTypeJpa;
+
+    public InventoryRepositoryAdapter(JpaInventoryRepository inventoryJpa,
+                                      JpaRoomTypeRepository roomTypeJpa) {
+        this.inventoryJpa = inventoryJpa;
+        this.roomTypeJpa  = roomTypeJpa;
+    }
+
+    @Override
+    public Inventory save(Inventory inventory) {
+        RoomTypeJpaEntity roomTypeRef = roomTypeJpa.getReferenceById(inventory.getRoomType().getId());
+        InventoryJpaEntity entity = InventoryJpaEntity.fromDomain(inventory, roomTypeRef);
+        return inventoryJpa.save(entity).toDomain();
+    }
+
+    @Override
+    public Optional<Inventory> findByRoomTypeIdAndDate(Long id, LocalDate date) {
+        return inventoryJpa.findByRoomTypeIdAndDate(id, date)
+                .map(InventoryJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<Inventory> findByRoomTypeIdAndDateBetween(Long id, LocalDate from, LocalDate to) {
+        return inventoryJpa.findByRoomTypeIdAndDateBetween(id, from, to).stream()
+                .map(InventoryJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public boolean existsByRoomTypeIdAndDate(Long id, LocalDate date) {
+        return inventoryJpa.existsByRoomTypeIdAndDate(id, date);
+    }
+
+    @Override
+    public List<Inventory> findAllByDate(LocalDate date) {
+        return inventoryJpa.findAllByDate(date).stream()
+                .map(InventoryJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public int sumReservedRoomsByDate(LocalDate date) {
+        return inventoryJpa.sumReservedRoomsByDate(date);
+    }
+
+    @Override
+    public int sumAvailableRoomsByDate(LocalDate date) {
+        return inventoryJpa.sumAvailableRoomsByDate(date);
+    }
+
+    @Override
+    public int sumTotalRoomsByDate(LocalDate date) {
+        return inventoryJpa.sumTotalRoomsByDate(date);
+    }
+}

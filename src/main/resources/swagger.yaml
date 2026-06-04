@@ -1,0 +1,696 @@
+openapi: 3.0.3
+info:
+  title: Hôtel API
+  description: API de gestion hôtelière — SAÉ S6 IUT Rodez
+  version: 1.0.0
+  contact:
+    name: Alexandre Brouzes
+
+servers:
+  - url: http://localhost:8060
+    description: Serveur local
+
+tags:
+  - name: Room Types
+    description: US-01 — Gestion des types de chambres
+  - name: Prices
+    description: US-02 — Gestion des tarifs par période
+  - name: Availability
+    description: US-03 — Consultation de la disponibilité
+  - name: Bookings
+    description: US-04, US-05, US-09 — Réservations et options
+  - name: Price Estimate
+    description: US-06 — Calcul du prix d'un séjour
+  - name: Dashboard
+    description: US-07 — Tableau de bord
+  - name: Invoices
+    description: US-08 — Factures immuables
+
+paths:
+
+  # ─── US-01 : Types de chambres ───────────────────────────────────────────
+  /room-types:
+    get:
+      tags: [Room Types]
+      summary: Lister tous les types de chambres
+      operationId: getAllRoomTypes
+      responses:
+        '200':
+          description: Liste des types de chambres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomTypeResponse'
+              example:
+                - id: 1
+                  name: Chambre Simple
+                  totalRooms: 10
+                - id: 2
+                  name: Chambre Double
+                  totalRooms: 8
+                - id: 3
+                  name: Suite
+                  totalRooms: 3
+
+    post:
+      tags: [Room Types]
+      summary: Créer un nouveau type de chambre
+      operationId: createRoomType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomTypeRequest'
+            example:
+              name: Suite Prestige
+              totalRooms: 5
+      responses:
+        '201':
+          description: Type de chambre créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomTypeResponse'
+              example:
+                id: 4
+                name: Suite Prestige
+                totalRooms: 5
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /room-types/{id}:
+    get:
+      tags: [Room Types]
+      summary: Récupérer un type de chambre par ID
+      operationId: getRoomTypeById
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Type de chambre trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomTypeResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ─── US-02 : Tarifs ───────────────────────────────────────────────────────
+  /room-types/{id}/prices:
+    post:
+      tags: [Prices]
+      summary: Ajouter un tarif par période à un type de chambre
+      operationId: addPriceToRoomType
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomTypePriceRequest'
+            example:
+              startDate: '2026-07-01'
+              endDate: '2026-08-31'
+              pricePerNight: 129.00
+      responses:
+        '201':
+          description: Tarif ajouté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomTypePriceResponse'
+              example:
+                id: 8
+                roomTypeId: 1
+                startDate: '2026-07-01'
+                endDate: '2026-08-31'
+                pricePerNight: 129.00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ─── US-03 : Disponibilité ────────────────────────────────────────────────
+  /availability:
+    get:
+      tags: [Availability]
+      summary: Consulter la disponibilité d'un type de chambre sur une période
+      operationId: checkAvailability
+      parameters:
+        - name: roomTypeId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-07-10'
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-07-15'
+        - name: qty
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+          example: 2
+      responses:
+        '200':
+          description: Résultat de disponibilité
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+              example:
+                roomTypeId: 1
+                from: '2026-07-10'
+                to: '2026-07-15'
+                available: true
+                remainingRooms: 8
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ─── US-04 + US-05 : Réservations ────────────────────────────────────────
+  /bookings:
+    post:
+      tags: [Bookings]
+      summary: Créer une réservation (avec options éventuelles)
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+            example:
+              roomTypeId: 1
+              from: '2026-07-10'
+              to: '2026-07-15'
+              quantity: 1
+              nom: Brouzes
+              prenom: Alexandre
+              email: alexandre@example.com
+              options:
+                - 'ANNIVERSAIRE,Décoration chambre anniversaire'
+                - 'LIT BEBE,Pour enfant de 18 mois'
+      responses:
+        '201':
+          description: Réservation créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Plus de chambres disponibles sur cette période
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /bookings/{id}:
+    delete:
+      tags: [Bookings]
+      summary: Annuler une réservation (US-09)
+      operationId: cancelBooking
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Réservation annulée
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Réservation déjà annulée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── US-06 : Calcul du prix ───────────────────────────────────────────────
+  /bookings/price-estimate:
+    get:
+      tags: [Price Estimate]
+      summary: Calculer le prix estimé d'un séjour
+      operationId: getPriceEstimate
+      parameters:
+        - name: roomTypeId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-07-10'
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-07-15'
+        - name: quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+          example: 2
+      responses:
+        '200':
+          description: Prix estimé calculé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceEstimateResponse'
+              example:
+                totalPrice: 645.00
+                nights: 5
+                quantity: 2
+        '400':
+          description: Aucun tarif défini pour une des nuits demandées
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── US-07 : Dashboard ───────────────────────────────────────────────────
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Consulter le tableau de bord
+      operationId: getDashboard
+      responses:
+        '200':
+          description: Indicateurs du tableau de bord
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+              example:
+                totalBookings: 5
+                totalRevenue: 1518.00
+                occupancyRate: 14.29
+                bookingsByStatus:
+                  CONFIRMED: 3
+                  PENDING: 1
+                  CANCELLED: 1
+                revenueByRoomType:
+                  Chambre Simple: 621.00
+                  Suite: 897.00
+
+  # ─── US-08 : Factures ────────────────────────────────────────────────────
+  /invoices:
+    post:
+      tags: [Invoices]
+      summary: Émettre une facture immuable pour une réservation
+      operationId: generateInvoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+            example:
+              bookingId: 1
+              tvaRate: 10.00
+      responses:
+        '201':
+          description: Facture émise
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+              example:
+                id: 1
+                invoiceNumber: FACT-20260603-0001
+                bookingId: 1
+                clientNom: Martin
+                clientPrenom: Alice
+                clientEmail: alice.martin@mail.com
+                roomTypeName: Chambre Simple
+                fromDate: '2026-06-05'
+                toDate: '2026-06-08'
+                quantity: 1
+                amountHT: 207.00
+                tvaRate: 10.00
+                amountTTC: 227.70
+                issuedAt: '2026-06-03T08:00:00'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Une facture existe déjà pour cette réservation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /invoices/{id}:
+    get:
+      tags: [Invoices]
+      summary: Récupérer une facture par ID
+      operationId: getInvoiceById
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Facture trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /invoices/booking/{bookingId}:
+    get:
+      tags: [Invoices]
+      summary: Récupérer la facture d'une réservation
+      operationId: getInvoiceByBookingId
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          description: Facture trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ─── Composants réutilisables ─────────────────────────────────────────────────
+components:
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      example: 1
+
+  responses:
+    BadRequest:
+      description: Données invalides
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Ressource introuvable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+
+    # ── Requêtes ──────────────────────────────────────────────────────────────
+    RoomTypeRequest:
+      type: object
+      required: [name, totalRooms]
+      properties:
+        name:
+          type: string
+          example: Suite Prestige
+        totalRooms:
+          type: integer
+          minimum: 1
+          example: 5
+
+    RoomTypePriceRequest:
+      type: object
+      required: [startDate, endDate, pricePerNight]
+      properties:
+        startDate:
+          type: string
+          format: date
+          example: '2026-07-01'
+        endDate:
+          type: string
+          format: date
+          example: '2026-08-31'
+        pricePerNight:
+          type: number
+          format: double
+          minimum: 0.01
+          example: 129.00
+
+    BookingRequest:
+      type: object
+      required: [roomTypeId, from, to, quantity, nom, prenom, email]
+      properties:
+        roomTypeId:
+          type: integer
+          format: int64
+          example: 1
+        from:
+          type: string
+          format: date
+          example: '2026-07-10'
+        to:
+          type: string
+          format: date
+          example: '2026-07-15'
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+        nom:
+          type: string
+          example: Brouzes
+        prenom:
+          type: string
+          example: Alexandre
+        email:
+          type: string
+          format: email
+          example: alexandre@example.com
+        options:
+          type: array
+          description: Format "TYPE,commentaire libre"
+          items:
+            type: string
+          example:
+            - 'ANNIVERSAIRE,Décoration chambre'
+            - 'LIT BEBE,Pour enfant de 18 mois'
+
+    InvoiceRequest:
+      type: object
+      required: [bookingId, tvaRate]
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+          example: 1
+        tvaRate:
+          type: number
+          format: double
+          minimum: 0
+          example: 10.00
+
+    # ── Réponses ──────────────────────────────────────────────────────────────
+    RoomTypeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        totalRooms:
+          type: integer
+
+    RoomTypePriceResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        roomTypeId:
+          type: integer
+          format: int64
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        pricePerNight:
+          type: number
+          format: double
+
+    AvailabilityResponse:
+      type: object
+      properties:
+        roomTypeId:
+          type: integer
+          format: int64
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        available:
+          type: boolean
+        remainingRooms:
+          type: integer
+
+    BookingResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        roomTypeId:
+          type: integer
+          format: int64
+        roomTypeName:
+          type: string
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        quantity:
+          type: integer
+        amount:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [CONFIRMED, PENDING, CANCELLED]
+        nom:
+          type: string
+        prenom:
+          type: string
+        email:
+          type: string
+        options:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              comment:
+                type: string
+
+    PriceEstimateResponse:
+      type: object
+      properties:
+        totalPrice:
+          type: number
+          format: double
+        nights:
+          type: integer
+        quantity:
+          type: integer
+
+    DashboardResponse:
+      type: object
+      properties:
+        totalBookings:
+          type: integer
+          format: int64
+        totalRevenue:
+          type: number
+          format: double
+        occupancyRate:
+          type: number
+          format: double
+          description: Taux d'occupation en % pour aujourd'hui
+        bookingsByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        revenueByRoomType:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+
+    InvoiceResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        invoiceNumber:
+          type: string
+        bookingId:
+          type: integer
+          format: int64
+        clientNom:
+          type: string
+        clientPrenom:
+          type: string
+        clientEmail:
+          type: string
+        roomTypeName:
+          type: string
+        fromDate:
+          type: string
+          format: date
+        toDate:
+          type: string
+          format: date
+        quantity:
+          type: integer
+        amountHT:
+          type: number
+          format: double
+        tvaRate:
+          type: number
+          format: double
+        amountTTC:
+          type: number
+          format: double
+        issuedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
