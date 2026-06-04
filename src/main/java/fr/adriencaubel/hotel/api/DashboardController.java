@@ -47,7 +47,6 @@ public class DashboardController {
                 .map(Booking::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Count by status
         Map<String, Long> bookingsByStatus = bookings.stream()
                 .collect(Collectors.groupingBy(
                         Booking::getStatus,
