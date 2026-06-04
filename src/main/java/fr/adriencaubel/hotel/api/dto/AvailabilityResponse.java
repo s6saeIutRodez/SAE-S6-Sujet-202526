@@ -9,7 +9,7 @@ public class AvailabilityResponse {
     public LocalDate from;
     public LocalDate to;
     public boolean available;
-    public int remainingMin; // minimum remaining across days
+    public int remainingMin;
     
     public AvailabilityResponse(Long roomTypeId, LocalDate from, LocalDate to,
                                 boolean available, int remainingMin) {
