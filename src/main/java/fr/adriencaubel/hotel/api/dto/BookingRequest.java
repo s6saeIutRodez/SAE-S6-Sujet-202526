@@ -17,7 +17,6 @@ public class BookingRequest {
     @NotNull
     public LocalDate to;
 
-    // Doit être au format "nom prenom email"
     @NotNull
     public String nomPrenomEmail;
     
