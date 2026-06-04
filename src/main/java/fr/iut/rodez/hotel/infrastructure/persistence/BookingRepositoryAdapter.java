@@ -3,11 +3,13 @@ package fr.iut.rodez.hotel.infrastructure.persistence;
 import fr.iut.rodez.hotel.domain.model.Booking;
 import fr.iut.rodez.hotel.domain.port.out.BookingRepository;
 import org.springframework.stereotype.Repository;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptateur : traduit entre Booking (domaine) et BookingJpaEntity (infra).
+ */
 @Repository
 public class BookingRepositoryAdapter implements BookingRepository {
 
@@ -44,14 +46,19 @@ public class BookingRepositoryAdapter implements BookingRepository {
         return bookingJpa.countByStatus(status);
     }
 
-    // ── IMPLÉMENTATION DES MÉTRIQUES OPTIMISÉES ──
     @Override
     public long countAll() {
-        return bookingJpa.count(); // Utilise la méthode count() native de Spring Data
+        return bookingJpa.count();
     }
 
+    /**
+     * SUM retourne null si aucune réservation ne correspond au statut.
+     * On retourne BigDecimal.ZERO dans ce cas pour éviter une NullPointerException
+     * dans le Gauge Micrometer (qui émettrait NaN, supprimé par l'exportateur OTLP).
+     */
     @Override
     public BigDecimal sumRevenueByStatus(String status) {
-        return bookingJpa.sumRevenueByStatus(status);
+        BigDecimal result = bookingJpa.sumRevenueByStatus(status);
+        return result != null ? result : BigDecimal.ZERO;
     }
 }
