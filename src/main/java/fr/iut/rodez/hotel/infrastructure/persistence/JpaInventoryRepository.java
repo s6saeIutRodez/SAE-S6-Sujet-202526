@@ -27,8 +27,7 @@ interface JpaInventoryRepository extends JpaRepository<InventoryJpaEntity, Long>
 
     @Query("SELECT i FROM InventoryJpaEntity i WHERE i.date = :date")
     List<InventoryJpaEntity> findAllByDate(@Param("date") LocalDate date);
-
-    // ── REQUÊTES OPTIMISÉES POUR LES MÉTRIQUES ──
+    
     @Query("SELECT COALESCE(SUM(i.reservedRooms), 0) FROM InventoryJpaEntity i WHERE i.date = :date")
     int sumReservedRoomsByDate(@Param("date") LocalDate date);
 
