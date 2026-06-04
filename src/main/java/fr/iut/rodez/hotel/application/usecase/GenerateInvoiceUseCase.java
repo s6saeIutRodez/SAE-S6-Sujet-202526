@@ -27,19 +27,16 @@ public class GenerateInvoiceUseCase implements IGenerateInvoiceUseCase {
     @Override
     @Transactional
     public Invoice execute(Long bookingId) {
-        // 1. Validation Cas Limite : Empêcher les doublons de facture
         if (!invoiceRepository.findByBookingId(bookingId).isEmpty()) {
             throw new IllegalStateException(
                     "Une facture a déjà été émise pour la réservation ID : " + bookingId
             );
         }
 
-        // 2. Récupération du Booking
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Réservation introuvable : " + bookingId));
 
-        // 3. Appel au Domaine avec tes 2 arguments
         Invoice invoice = Invoice.issue(booking, generateNumber());
         return invoiceRepository.save(invoice);
     }
