@@ -30,10 +30,8 @@ public class AddPriceToRoomTypeUseCase implements IAddPriceToRoomTypeUseCase {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Type de chambre introuvable : " + roomTypeId));
 
-        // Création du prix — invariants vérifiés dans la fabrique statique
         RoomTypePrice price = RoomTypePrice.create(startDate, endDate, pricePerNight);
 
-        // Ajout via la racine d'agrégat → information hiding respecté
         roomType.addPrice(price);
 
         roomTypeRepository.save(roomType);
