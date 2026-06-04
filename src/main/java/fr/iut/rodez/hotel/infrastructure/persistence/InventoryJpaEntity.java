@@ -31,7 +31,7 @@ public class InventoryJpaEntity {
     protected InventoryJpaEntity() {}
 
     /**
-     * Conversion domaine → JPA.
+     * Conversion domaine  JPA.
      * Reçoit la référence JPA du room type pour éviter un SELECT supplémentaire.
      */
     static InventoryJpaEntity fromDomain(Inventory inventory, RoomTypeJpaEntity roomTypeRef) {
@@ -44,7 +44,7 @@ public class InventoryJpaEntity {
         return e;
     }
 
-    /** Conversion JPA → domaine */
+    /** Conversion JPA  domaine */
     Inventory toDomain() {
         return Inventory.reconstruct(id, roomType.toDomain(), date, totalRooms, reservedRooms);
     }
