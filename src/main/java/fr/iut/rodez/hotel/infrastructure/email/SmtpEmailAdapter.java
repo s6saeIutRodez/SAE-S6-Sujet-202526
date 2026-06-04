@@ -7,7 +7,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-// Driven adapter : implémente le port défini par le domaine
 @Component
 public class SmtpEmailAdapter implements EmailPort {
 
@@ -25,7 +24,7 @@ public class SmtpEmailAdapter implements EmailPort {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("noreply@hotel.com");
-            message.setTo(toEmail);  // BUG CORRIGÉ : on utilise l'email du client
+            message.setTo(toEmail); 
             message.setSubject("Confirmation de réservation #" + bookingId);
             message.setText("Votre réservation #" + bookingId + " est confirmée.");
             mailSender.send(message);
