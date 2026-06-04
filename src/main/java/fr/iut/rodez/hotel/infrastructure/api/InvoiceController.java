@@ -28,14 +28,12 @@ public class InvoiceController {
         this.invoiceRepository = invoiceRepository;
     }
 
-    /** Émet une facture immuable pour la réservation indiquée */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public InvoiceResponseDto generate(@RequestParam Long bookingId) {
         return InvoiceResponseDto.from(generateInvoiceUseCase.execute(bookingId));
     }
 
-    /** Consulte une facture par son identifiant */
     @GetMapping("/{id}")
     public InvoiceResponseDto findById(@PathVariable Long id) {
         return invoiceRepository.findById(id)
@@ -43,7 +41,6 @@ public class InvoiceController {
                 .orElseThrow(() -> new IllegalArgumentException("Facture introuvable : " + id));
     }
 
-    /** Liste toutes les factures associées à une réservation */
     @GetMapping
     public List<InvoiceResponseDto> findByBooking(@RequestParam Long bookingId) {
         return invoiceRepository.findByBookingId(bookingId).stream()
