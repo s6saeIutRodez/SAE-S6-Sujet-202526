@@ -26,7 +26,7 @@ public class BookingOptionJpaEntity {
 
     protected BookingOptionJpaEntity() {}
 
-    /** Conversion domaine → JPA. Reçoit l'entité parente déjà construite. */
+    /** Conversion domaine JPA. Reçoit l'entité parente déjà construite. */
     static BookingOptionJpaEntity fromDomain(BookingOption option, BookingJpaEntity bookingEntity) {
         BookingOptionJpaEntity e = new BookingOptionJpaEntity();
         e.id      = option.getId();
@@ -36,7 +36,7 @@ public class BookingOptionJpaEntity {
         return e;
     }
 
-    /** Conversion JPA → domaine avec préservation de l'ID */
+    /** Conversion JPA domaine avec préservation de l'ID */
     BookingOption toDomain() {
         return BookingOption.reconstruct(id, type, comment);
     }
