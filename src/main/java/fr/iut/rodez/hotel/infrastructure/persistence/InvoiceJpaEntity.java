@@ -9,10 +9,6 @@ import java.time.LocalDateTime;
 /**
  * Entité JPA pour la table invoices.
  * La table est créée automatiquement par Hibernate via spring.jpa.hibernate.ddl-auto=update|create.
- *
- * Immuabilité garantie à deux niveaux :
- * 1. Domaine : Invoice n'a aucun setter
- * 2. JPA     : updatable=false sur toutes les colonnes métier → Hibernate ne génère jamais d'UPDATE
  */
 @Entity
 @Table(name = "invoices")
@@ -52,7 +48,6 @@ public class InvoiceJpaEntity {
     @Column(nullable = false, precision = 10, scale = 2, updatable = false)
     private BigDecimal amount;
 
-    // 1. AJOUT DE LA COLONNE TVA DANS L'ENTITÉ JPA
     @Column(name = "tva_rate", nullable = false, precision = 5, scale = 2, updatable = false)
     private BigDecimal tvaRate;
 
@@ -75,7 +70,6 @@ public class InvoiceJpaEntity {
         e.quantity      = inv.getQuantity();
         e.amount        = inv.getAmount();
 
-        // 2. MAPPING DE LA TVA (ALLER)
         e.tvaRate       = inv.getTvaRate();
 
         e.issuedAt      = inv.getIssuedAt();
@@ -83,7 +77,6 @@ public class InvoiceJpaEntity {
     }
 
     public Invoice toDomain() {
-        // 3. RECONSTRUCTION AVEC LE CHAMP 'tvaRate' INSÉRÉ AU BON ENDROIT
         return Invoice.reconstruct(
                 id, invoiceNumber, bookingId,
                 clientNom, clientPrenom, clientEmail,
