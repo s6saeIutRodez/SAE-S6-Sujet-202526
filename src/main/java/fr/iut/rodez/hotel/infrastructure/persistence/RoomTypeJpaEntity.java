@@ -39,20 +39,19 @@ public class RoomTypeJpaEntity {
         return e;
     }
 
-    /** Conversion domaine → JPA */
+    /** Conversion domaine  JPA */
     static RoomTypeJpaEntity fromDomain(RoomType rt) {
         RoomTypeJpaEntity e = new RoomTypeJpaEntity();
         e.id         = rt.getId();
         e.name       = rt.getName();
         e.totalRooms = rt.getTotalRooms();
-        // Construction des prix après que l'entité parente soit initialisée
         e.prices = rt.getPrices().stream()
                 .map(p -> RoomTypePriceJpaEntity.fromDomain(p, e))
                 .toList();
         return e;
     }
 
-    /** Conversion JPA → domaine */
+    /** Conversion JPA  domaine */
     RoomType toDomain() {
         RoomType rt = RoomType.reconstruct(id, name, totalRooms);
         prices.stream()
