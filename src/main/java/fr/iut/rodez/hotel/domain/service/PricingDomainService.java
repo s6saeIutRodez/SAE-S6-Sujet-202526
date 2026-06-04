@@ -5,7 +5,6 @@ import fr.iut.rodez.hotel.domain.model.RoomTypePrice;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-// Logique métier pure — pas de dépendance infra, testable sans mock
 public class PricingDomainService {
 
     public BigDecimal calculateTotalPrice(RoomType roomType,
