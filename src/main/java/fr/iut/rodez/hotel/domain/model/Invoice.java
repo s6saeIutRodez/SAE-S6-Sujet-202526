@@ -17,17 +17,15 @@ public class Invoice {
     private LocalDate toDate;
     private int quantity;
     private BigDecimal amount;
-    private BigDecimal tvaRate; // Ajouté pour la conformité TVA
+    private BigDecimal tvaRate;
     private LocalDateTime issuedAt;
 
     protected Invoice() {}
 
-    /** Seul point d'entrée métier — Vérification stricte des invariants */
     public static Invoice issue(Booking booking, String invoiceNumber) {
         if (booking == null)
             throw new IllegalArgumentException("La réservation est obligatoire");
 
-        // Validation Cas d'erreur : Seul le statut CONFIRMED permet de facturer
         if (!"CONFIRMED".equals(booking.getStatus())) {
             throw new IllegalStateException(
                     "Impossible d'émettre une facture pour une réservation avec le statut : " + booking.getStatus()
@@ -48,7 +46,7 @@ public class Invoice {
         inv.toDate        = booking.getToDate();
         inv.quantity      = booking.getQuantity();
         inv.amount        = booking.getAmount();
-        inv.tvaRate       = new BigDecimal("10.00"); // Taux fixe de l'hôtel (ex: 10%)
+        inv.tvaRate       = new BigDecimal("10.00");
         inv.issuedAt      = LocalDateTime.now();
         return inv;
     }
@@ -74,7 +72,6 @@ public class Invoice {
         return inv;
     }
 
-    // Getters uniquement (Pas de setters pour garantir l'inaltérabilité)
     public Long getId()                { return id; }
     public String getInvoiceNumber()   { return invoiceNumber; }
     public Long getBookingId()         { return bookingId; }
