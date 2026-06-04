@@ -11,7 +11,6 @@ public interface BookingRepository {
     List<Booking> findAll();
     long countByStatus(String status);
 
-    // ── MÉTHODES OPTIMISÉES POUR LES MÉTRIQUES ──
     long countAll();
     BigDecimal sumRevenueByStatus(String status);
 }
