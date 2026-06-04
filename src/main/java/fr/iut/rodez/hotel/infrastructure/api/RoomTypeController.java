@@ -51,11 +51,8 @@ public class RoomTypeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RoomTypeResponse create(@RequestBody @Valid RoomTypeRequestDto req) {
-        // 1. Instantiate the Command object expected by the use case
         ICreateRoomTypeUseCase.Command command =
                 new ICreateRoomTypeUseCase.Command(req.name(), req.totalRooms());
-
-        // 2. Pass the command to the execute method
         CreateRoomTypeUseCase.Result result = createRoomTypeUseCase.execute(command);
 
         return new RoomTypeResponse(result.id(), result.name(), result.totalRooms());
