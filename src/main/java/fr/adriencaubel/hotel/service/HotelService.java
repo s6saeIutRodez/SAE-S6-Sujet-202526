@@ -43,7 +43,6 @@ public class HotelService {
                 inventoryRepo.findByRoomTypeAndDateBetween(roomTypeId, from, to);
 
         if (inventories.isEmpty()) {
-            // Aucun inventaire donc capacité
             return new AvailabilityResponse(
                     roomTypeId,
                     from,
@@ -53,7 +52,6 @@ public class HotelService {
             );
         }
 
-        // else Compute minimum remaining across the stay
         int minRemaining = inventories.stream()
                 .mapToInt(inv -> inv.getTotalRooms() - inv.getReservedRooms())
                 .min()
@@ -70,7 +68,6 @@ public class HotelService {
         );
     }
     
-    // Volontairement: transaction discutable + mélange paiement/inventory/booking/email
     @Transactional
     public Booking reserveRoom(BookingRequest req) {
         if (req.to.isBefore(req.from)) {
