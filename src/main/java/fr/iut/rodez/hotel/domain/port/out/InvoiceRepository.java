@@ -12,7 +12,6 @@ public interface InvoiceRepository {
     List<Invoice> findByBookingId(Long bookingId);
     List<Invoice> findAll();
 
-    // ── MÉTHODES OPTIMISÉES POUR LES MÉTRIQUES ──
     long countAll();
     BigDecimal sumTotalAmountTTC();
 }
