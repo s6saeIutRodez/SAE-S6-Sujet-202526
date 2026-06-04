@@ -9,7 +9,6 @@ public class BookingOption {
 
     protected BookingOption() {}
 
-    /** Constructeur package-private : seul Booking.addOption peut créer une option métier */
     BookingOption(Booking booking, String type, String comment) {
         this.booking = booking;
         this.type = type;
