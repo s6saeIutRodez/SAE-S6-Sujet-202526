@@ -3,6 +3,7 @@ package fr.iut.rodez.hotel.infrastructure.persistence;
 import fr.iut.rodez.hotel.domain.model.Invoice;
 import fr.iut.rodez.hotel.domain.port.out.InvoiceRepository;
 import org.springframework.stereotype.Repository;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,16 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
         return jpa.findAll().stream()
                 .map(InvoiceJpaEntity::toDomain)
                 .toList();
+    }
+
+    // ── IMPLÉMENTATION DES MÉTRIQUES OPTIMISÉES ──
+    @Override
+    public long countAll() {
+        return jpa.count();
+    }
+
+    @Override
+    public BigDecimal sumTotalAmountTTC() {
+        return jpa.sumTotalAmountTTC();
     }
 }

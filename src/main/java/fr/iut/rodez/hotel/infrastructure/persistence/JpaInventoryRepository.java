@@ -9,7 +9,6 @@ import java.util.Optional;
 
 /**
  * Repository Spring Data JPA pour InventoryJpaEntity.
- * Les requêtes JPQL utilisent le nom de la classe JPA (InventoryJpaEntity).
  */
 interface JpaInventoryRepository extends JpaRepository<InventoryJpaEntity, Long> {
 
@@ -25,4 +24,17 @@ interface JpaInventoryRepository extends JpaRepository<InventoryJpaEntity, Long>
             @Param("to") LocalDate to);
 
     boolean existsByRoomTypeIdAndDate(Long roomTypeId, LocalDate date);
+
+    @Query("SELECT i FROM InventoryJpaEntity i WHERE i.date = :date")
+    List<InventoryJpaEntity> findAllByDate(@Param("date") LocalDate date);
+
+    // ── REQUÊTES OPTIMISÉES POUR LES MÉTRIQUES ──
+    @Query("SELECT COALESCE(SUM(i.reservedRooms), 0) FROM InventoryJpaEntity i WHERE i.date = :date")
+    int sumReservedRoomsByDate(@Param("date") LocalDate date);
+
+    @Query("SELECT COALESCE(SUM(i.totalRooms - i.reservedRooms), 0) FROM InventoryJpaEntity i WHERE i.date = :date")
+    int sumAvailableRoomsByDate(@Param("date") LocalDate date);
+
+    @Query("SELECT COALESCE(SUM(i.totalRooms), 0) FROM InventoryJpaEntity i WHERE i.date = :date")
+    int sumTotalRoomsByDate(@Param("date") LocalDate date);
 }

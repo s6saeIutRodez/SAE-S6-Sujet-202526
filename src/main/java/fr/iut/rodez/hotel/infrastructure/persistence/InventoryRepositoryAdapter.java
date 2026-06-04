@@ -9,9 +9,6 @@ import java.util.Optional;
 
 /**
  * Adaptateur : traduit entre Inventory (domaine) et InventoryJpaEntity (infra).
- *
- * Injecte JpaRoomTypeRepository pour obtenir une référence FK vers le room type
- * via getReferenceById() — évite un SELECT inutile tout en satisfaisant Hibernate.
  */
 @Repository
 public class InventoryRepositoryAdapter implements InventoryRepository {
@@ -27,7 +24,6 @@ public class InventoryRepositoryAdapter implements InventoryRepository {
 
     @Override
     public Inventory save(Inventory inventory) {
-        // getReferenceById : proxy FK sans SELECT supplémentaire sur room_types
         RoomTypeJpaEntity roomTypeRef = roomTypeJpa.getReferenceById(inventory.getRoomType().getId());
         InventoryJpaEntity entity = InventoryJpaEntity.fromDomain(inventory, roomTypeRef);
         return inventoryJpa.save(entity).toDomain();
@@ -49,5 +45,28 @@ public class InventoryRepositoryAdapter implements InventoryRepository {
     @Override
     public boolean existsByRoomTypeIdAndDate(Long id, LocalDate date) {
         return inventoryJpa.existsByRoomTypeIdAndDate(id, date);
+    }
+
+    @Override
+    public List<Inventory> findAllByDate(LocalDate date) {
+        return inventoryJpa.findAllByDate(date).stream()
+                .map(InventoryJpaEntity::toDomain)
+                .toList();
+    }
+
+    // ── IMPLÉMENTATION DES MÉTRlQUES DU PORT ──
+    @Override
+    public int sumReservedRoomsByDate(LocalDate date) {
+        return inventoryJpa.sumReservedRoomsByDate(date);
+    }
+
+    @Override
+    public int sumAvailableRoomsByDate(LocalDate date) {
+        return inventoryJpa.sumAvailableRoomsByDate(date);
+    }
+
+    @Override
+    public int sumTotalRoomsByDate(LocalDate date) {
+        return inventoryJpa.sumTotalRoomsByDate(date);
     }
 }

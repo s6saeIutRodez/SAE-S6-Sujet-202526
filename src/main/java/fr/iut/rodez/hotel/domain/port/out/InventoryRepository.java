@@ -10,4 +10,10 @@ public interface InventoryRepository {
     Optional<Inventory> findByRoomTypeIdAndDate(Long roomTypeId, LocalDate date);
     List<Inventory> findByRoomTypeIdAndDateBetween(Long roomTypeId, LocalDate from, LocalDate to);
     boolean existsByRoomTypeIdAndDate(Long roomTypeId, LocalDate date);
+    List<Inventory> findAllByDate(LocalDate date);
+
+    // ── MÉTHODES OPTIMISÉES POUR LES MÉTRIQUES ──
+    int sumReservedRoomsByDate(LocalDate date);
+    int sumAvailableRoomsByDate(LocalDate date);
+    int sumTotalRoomsByDate(LocalDate date);
 }
