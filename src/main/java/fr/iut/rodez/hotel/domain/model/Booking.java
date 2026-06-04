@@ -22,7 +22,6 @@ public class Booking {
 
     protected Booking() {}
 
-    /** Constructeur métier : invariants vérifiés à la création */
     public static Booking create(RoomType roomType,
                                  LocalDate from, LocalDate to,
                                  int quantity, BigDecimal amount,
@@ -69,7 +68,6 @@ public class Booking {
         return b;
     }
 
-    /** Ajoute une option métier — invariant sur le type vérifié ici */
     public void addOption(String type, String comment) {
         if (type == null || type.isBlank())
             throw new IllegalArgumentException("Le type d'option ne peut pas être vide");
@@ -84,7 +82,6 @@ public class Booking {
         this.options.add(option);
     }
 
-    /** Invariant : impossible d'annuler une réservation déjà annulée */
     public void cancel() {
         if (BookingStatus.CANCELLED.name().equals(this.status))
             throw new IllegalStateException("La réservation est déjà annulée");
