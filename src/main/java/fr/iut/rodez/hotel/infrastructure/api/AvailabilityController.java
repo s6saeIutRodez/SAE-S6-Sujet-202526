@@ -1,4 +1,3 @@
-// infrastructure/api/AvailabilityController.java
 package fr.iut.rodez.hotel.infrastructure.api;
 
 import fr.iut.rodez.hotel.application.usecase.CheckAvailabilityUseCase;
