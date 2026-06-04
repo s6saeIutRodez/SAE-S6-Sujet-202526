@@ -7,13 +7,6 @@ import java.math.BigDecimal;
 
 /**
  * Repository Spring Data JPA pour BookingJpaEntity.
- *
- * ⚠️ IMPORTANT — COALESCE(SUM(decimal), 0) avec Hibernate 6.x :
- * Le littéral entier '0' provoque une incompatibilité de type avec BigDecimal.
- * Hibernate retourne alors Long/Double au lieu de BigDecimal, entraînant
- * une ClassCastException silencieuse dans le Gauge Micrometer (NaN → OTLP drop → 0 dans Grafana).
- *
- * Solution : utiliser SUM seul (retourne null si aucune ligne), puis gérer null dans l'adaptateur.
  */
 interface JpaBookingRepository extends JpaRepository<BookingJpaEntity, Long> {
 
