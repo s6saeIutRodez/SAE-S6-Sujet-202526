@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.List;
 
-// DTO d'entrée — les entités domaine ne sortent jamais de la couche domaine
 public record BookingRequestDto(
         @NotNull Long roomTypeId,
         @NotNull LocalDate from,
