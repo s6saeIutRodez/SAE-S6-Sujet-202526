@@ -38,7 +38,6 @@ public class RoomTypePrice {
         return p;
     }
 
-    /** Appelé uniquement par RoomType.addPrice — information hiding */
     void assignTo(RoomType roomType) {
         this.roomType = roomType;
     }
