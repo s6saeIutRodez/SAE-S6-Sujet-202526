@@ -88,16 +88,4 @@ public class Invoice {
     public BigDecimal getAmount()      { return amount; }
     public BigDecimal getTvaRate()     { return tvaRate; }
     public LocalDateTime getIssuedAt() { return issuedAt; }
-
-    public BigDecimal getAmountTTC() {
-        if (this.amount == null) {
-            return BigDecimal.ZERO;
-        }
-        if (this.tvaRate == null) {
-            return this.amount;
-        }
-        // Calcul : HT * (1 + TVA/100)
-        BigDecimal tvaMultiplier = BigDecimal.ONE.add(this.tvaRate.divide(new BigDecimal("100")));
-        return this.amount.multiply(tvaMultiplier);
-    }
 }
