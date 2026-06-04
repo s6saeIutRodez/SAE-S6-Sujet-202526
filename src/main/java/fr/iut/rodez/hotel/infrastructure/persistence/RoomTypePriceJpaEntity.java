@@ -31,7 +31,7 @@ public class RoomTypePriceJpaEntity {
 
     protected RoomTypePriceJpaEntity() {}
 
-    /** Conversion domaine → JPA. Reçoit l'entité parente déjà construite. */
+    /** Conversion domaine  JPA. Reçoit l'entité parente déjà construite. */
     static RoomTypePriceJpaEntity fromDomain(RoomTypePrice p, RoomTypeJpaEntity roomTypeEntity) {
         RoomTypePriceJpaEntity e = new RoomTypePriceJpaEntity();
         e.id            = p.getId();
@@ -42,7 +42,7 @@ public class RoomTypePriceJpaEntity {
         return e;
     }
 
-    /** Conversion JPA → domaine */
+    /** Conversion JPA domaine */
     RoomTypePrice toDomain() {
         return RoomTypePrice.reconstruct(id, startDate, endDate, pricePerNight);
     }
