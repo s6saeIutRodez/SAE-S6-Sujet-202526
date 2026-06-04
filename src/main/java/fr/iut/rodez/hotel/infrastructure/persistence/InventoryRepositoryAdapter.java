@@ -54,7 +54,6 @@ public class InventoryRepositoryAdapter implements InventoryRepository {
                 .toList();
     }
 
-    // ── IMPLÉMENTATION DES MÉTRlQUES DU PORT ──
     @Override
     public int sumReservedRoomsByDate(LocalDate date) {
         return inventoryJpa.sumReservedRoomsByDate(date);
